@@ -3,7 +3,7 @@
 A Monte Carlo simulator, using Gale's Algorithm to determine the winner of a
 Hex game, based on the difference of the stone played on a single cell.
 
-There are two implementations in this repository. The first os written in
+There are two implementations in this repository. The first was written in
 Python, by [pgadey](https://github.com/pgadey). The second is written in Go,
 by [myself](https://github.com/nesv).
 
