@@ -2,7 +2,7 @@ GO	:= $(shell which go 2>/dev/null)
 
 all: hmc
 
-hmc: hexmontocarlo.go
+hmc: hexmontecarlo.go
 ifeq (${GO},"")
 	$(error Could not find go in your $$PATH)
 else
@@ -11,3 +11,6 @@ endif
 
 clean:
 	rm -f hmc
+
+deps:
+	${GO} get -v -u github.com/ericlagergren/go-prng/xorshift
