@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"math/rand"
 	"os"
 	"runtime"
 	"strconv"
@@ -13,6 +12,8 @@ import (
 	"sync"
 	"text/tabwriter"
 	"time"
+
+	prng "github.com/ericlagergren/go-prng/xorshift"
 )
 
 type trialParams struct {
@@ -91,13 +92,11 @@ func main() {
 	progress := make(chan struct{})
 	go showProgress(progress, numTrials, totalRuns)
 
-	// Start a goroutine for updating the critical count table.
+	// Start a goroutine for updating the critical count table, based upon
+	// the result of each trial.
 	criticalCount := make([][]int, boardSize)
 	for i := 0; i < boardSize; i++ {
 		criticalCount[i] = make([]int, boardSize)
-		for j := 0; j < len(criticalCount[i]); j++ {
-			criticalCount[i][j] = 0
-		}
 	}
 	results := make(chan result)
 	go func() {
@@ -113,7 +112,8 @@ func main() {
 	trials := make(chan trialParams, runtime.NumCPU())
 	for i := 0; i < runtime.NumCPU(); i++ {
 		go func() {
-			rng := rand.New(rand.NewSource(time.Now().UnixNano()))
+			rng := new(prng.Shift128Plus)
+			rng.Seed()
 			for params := range trials {
 				b := newRandomBernoulliBoard(rng, params.size)
 				t := newTrial(b, params.x, params.y)
@@ -165,7 +165,7 @@ type board [][]int
 //
 // The board returned by this function also marks the edges of the board with
 // stones denoting who needs to connect (for use in Gale's Algorithm).
-func newRandomBernoulliBoard(rng *rand.Rand, size int) board {
+func newRandomBernoulliBoard(rng *prng.Shift128Plus, size int) board {
 	b := make([][]int, size+2)
 
 	// First row of stones for Gale's Algorithm.
@@ -180,7 +180,7 @@ func newRandomBernoulliBoard(rng *rand.Rand, size int) board {
 		b[y][0] = 2
 
 		for x := 1; x < size+1; x++ {
-			b[y][x] = (rng.Int() % 2) + 1
+			b[y][x] = int((rng.Next() % 2) + 1)
 		}
 
 		b[y][size+1] = 2
@@ -242,8 +242,6 @@ func (b board) gale() (int, error) {
 		for i := 0; i < len(w); i++ {
 			w[i] = make([]int, len(v[i]))
 		}
-
-		//fmt.Fprintf(os.Stderr, "\t (%d,%d)-(%d,%d)\n", v[1][0], v[1][1], v[2][0], v[2][1])
 
 		if b[v[3][0]][v[3][1]] == b[v[2][0]][v[2][1]] {
 			// Go left.
