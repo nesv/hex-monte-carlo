@@ -23,6 +23,6 @@ Simply running
 
 will build the `hmc` binary. You can run
 
-	$ hmc -h
+	$ ./hmc -h
 
 to see all of the supported flags.
