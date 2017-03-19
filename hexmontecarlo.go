@@ -238,37 +238,38 @@ func (b board) gale() (int, error) {
 
 	n := len(b[0]) - 2
 	for (-1 <= v[3][0] && v[3][0] <= n+1) && (0 <= v[3][1] && v[3][1] <= n+1) {
-		w := make([][]int, len(v))
-		for i := 0; i < len(w); i++ {
-			w[i] = make([]int, len(v[i]))
+		w := [][]int{
+			{0, 0},
+			{0, 0},
+			{0, 0},
+			{0, 0},
 		}
-
 		if b[v[3][0]][v[3][1]] == b[v[2][0]][v[2][1]] {
 			// Go left.
-			copy(w[0], v[2])
-			copy(w[1], v[1])
-			copy(w[2], v[3])
+			b.galeCopy(w[0], v[2])
+			b.galeCopy(w[1], v[1])
+			b.galeCopy(w[2], v[3])
 			vec := []int{
 				v[1][0] + (v[1][0] - v[0][0]),
 				v[1][1] + (v[1][1] - v[0][1]),
 			}
-			copy(w[3], vec)
+			b.galeCopy(w[3], vec)
 			w[3][0], w[3][1] = v[1][0]+(v[1][0]-v[0][0]), v[1][1]+(v[1][1]-v[0][1])
 		} else if b[v[3][0]][v[3][1]] == b[v[1][0]][v[1][1]] {
 			// Go right.
-			copy(w[0], v[1])
-			copy(w[1], v[3])
-			copy(w[2], v[2])
+			b.galeCopy(w[0], v[1])
+			b.galeCopy(w[1], v[3])
+			b.galeCopy(w[2], v[2])
 			vec := []int{
 				v[2][0] + (v[2][0] - v[0][0]),
 				v[2][1] + (v[2][1] - v[0][1]),
 			}
-			copy(w[3], vec)
+			b.galeCopy(w[3], vec)
 		}
-		copy(v[0], w[0])
-		copy(v[1], w[1])
-		copy(v[2], w[2])
-		copy(v[3], w[3])
+		b.galeCopy(v[0], w[0])
+		b.galeCopy(v[1], w[1])
+		b.galeCopy(v[2], w[2])
+		b.galeCopy(v[3], w[3])
 	}
 
 	if v[3][1] == -1 {
@@ -278,4 +279,14 @@ func (b board) gale() (int, error) {
 	}
 
 	return 0, errors.New("broken algorithm: not [* -1] or [0 *]")
+}
+
+func (b board) galeCopy(dst, src []int) {
+	if len(dst) != len(src) {
+		panic("galeCopy: slices are of different lengths")
+	}
+	for i := 0; i < len(dst); i++ {
+		dst[i] = src[i]
+	}
+	return
 }
