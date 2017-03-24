@@ -249,22 +249,19 @@ func (b board) gale() (int, error) {
 			b.galeCopy(w[0], v[2])
 			b.galeCopy(w[1], v[1])
 			b.galeCopy(w[2], v[3])
-			vec := []int{
+			b.galeCopy(w[3], []int{
 				v[1][0] + (v[1][0] - v[0][0]),
 				v[1][1] + (v[1][1] - v[0][1]),
-			}
-			b.galeCopy(w[3], vec)
-			w[3][0], w[3][1] = v[1][0]+(v[1][0]-v[0][0]), v[1][1]+(v[1][1]-v[0][1])
+			})
 		} else if b[v[3][0]][v[3][1]] == b[v[1][0]][v[1][1]] {
 			// Go right.
 			b.galeCopy(w[0], v[1])
 			b.galeCopy(w[1], v[3])
 			b.galeCopy(w[2], v[2])
-			vec := []int{
+			b.galeCopy(w[3], []int{
 				v[2][0] + (v[2][0] - v[0][0]),
 				v[2][1] + (v[2][1] - v[0][1]),
-			}
-			b.galeCopy(w[3], vec)
+			})
 		}
 		b.galeCopy(v[0], w[0])
 		b.galeCopy(v[1], w[1])
